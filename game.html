@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tic Tac Toe - Level Up</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: white;
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    #message {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .board {
+      width: 300px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .square {
+      width: 90px;
+      height: 90px;
+      background: white;
+      color: black;
+      font-size: 40px;
+      font-weight: bold;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: 0.3s;
+    }
+
+    .square:hover {
+      background: #f1f1f1;
+      transform: scale(1.05);
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #ff9800;
+      color: white;
+    }
+
+    button:hover {
+      background: #e68900;
+    }
+  </style>
+</head>
+<body>
+
+<h1>⭐ vs 🌸 Tic Tac Toe</h1>
+<h2 id="message"></h2>
+
+<div class="board">
+  <div class="square" data-index="0"></div>
+  <div class="square" data-index="1"></div>
+  <div class="square" data-index="2"></div>
+  <div class="square" data-index="3"></div>
+  <div class="square" data-index="4"></div>
+  <div class="square" data-index="5"></div>
+  <div class="square" data-index="6"></div>
+  <div class="square" data-index="7"></div>
+  <div class="square" data-index="8"></div>
+</div>
+
+<button id="reset">Reset Game</button>
+
+<script>
+/*----- constants -----*/
+const winningCombos = [
+  [0,1,2],
+  [3,4,5],
+  [6,7,8],
+  [0,3,6],
+  [1,4,7],
+  [2,5,8],
+  [0,4,8],
+  [2,4,6]
+];
+
+/*----- state variables -----*/
+let board;
+let turn;
+let winner;
+let tie;
+
+/*----- cached elements -----*/
+const squareEls = document.querySelectorAll('.square');
+const messageEl = document.getElementById('message');
+const resetBtn = document.getElementById('reset');
+
+/*----- event listeners -----*/
+squareEls.forEach(square => {
+  square.addEventListener('click', handleClick);
+});
+resetBtn.addEventListener('click', init);
+
+/*----- functions -----*/
+init();
+
+function init() {
+  board = ['', '', '', '', '', '', '', '', ''];
+  turn = '⭐';
+  winner = false;
+  tie = false;
+  render();
+}
+
+function handleClick(evt) {
+  const index = evt.target.dataset.index;
+
+  if (board[index] !== '' || winner) return;
+
+  placePiece(index);
+  checkForWinner();
+  checkForTie();
+  switchPlayerTurn();
+  render();
+}
+
+function placePiece(index) {
+  board[index] = turn;
+}
+
+function checkForWinner() {
+  winningCombos.forEach(combo => {
+    if (
+      board[combo[0]] !== '' &&
+      board[combo[0]] === board[combo[1]] &&
+      board[combo[0]] === board[combo[2]]
+    ) {
+      winner = true;
+    }
+  });
+}
+
+function checkForTie() {
+  if (!winner && board.every(cell => cell !== '')) {
+    tie = true;
+  }
+}
+
+function switchPlayerTurn() {
+  if (!winner) {
+    turn = turn === '⭐' ? '🌸' : '⭐';
+  }
+}
+
+function render() {
+  board.forEach((value, index) => {
+    squareEls[index].textContent = value;
+  });
+
+  if (!winner && !tie) {
+    messageEl.textContent = `Turn: ${turn}`;
+  } else if (!winner && tie) {
+    messageEl.textContent = "It's a Tie!";
+  } else {
+    messageEl.textContent = `Winner is ${turn === '⭐' ? '🌸' : '⭐'} 🎉`;
+  }
+}
+</script>
+
+</body>
+</html>
